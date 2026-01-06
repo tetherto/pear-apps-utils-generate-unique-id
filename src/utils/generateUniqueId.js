@@ -1,3 +1,7 @@
+/**
+ * Generates a cryptographically secure random identifier.
+ * NOT intended for authentication, authorization, or secrets.
+ */
 export const generateUniqueId = () => {
   const crypto = globalThis.crypto
   if (typeof crypto === 'undefined') {
