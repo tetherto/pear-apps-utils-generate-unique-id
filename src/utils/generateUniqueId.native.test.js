@@ -3,6 +3,10 @@ import * as Crypto from 'expo-crypto'
 
 import { generateUniqueId } from './generateUniqueId.native'
 
+const UUID_V4_REGEX =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
+const HEX_32_REGEX = /^[0-9a-f]{32}$/i
+
 const originalCrypto = globalThis.crypto
 
 describe('generateUniqueId (native)', () => {
@@ -17,23 +21,27 @@ describe('generateUniqueId (native)', () => {
   })
 
   it('uses globalThis.crypto.randomUUID when available', () => {
-    const randomUUID = jest.fn(() => 'uuid-from-global')
+    const mockUuid = 'a1b2c3d4-e5f6-4a7b-8c9d-e0f1a2b3c4d5'
+    const randomUUID = jest.fn(() => mockUuid)
     globalThis.crypto = { randomUUID }
 
     const id = generateUniqueId()
 
-    expect(id).toBe('uuid-from-global')
+    expect(id).toBe(mockUuid)
+    expect(id).toMatch(UUID_V4_REGEX)
     expect(randomUUID).toHaveBeenCalledTimes(1)
     expect(Crypto.randomUUID).not.toHaveBeenCalled()
   })
 
   it('uses Crypto.randomUUID when global randomUUID is absent', () => {
+    const mockUuid = 'f1e2d3c4-b5a6-4978-8a6b-5c4d3e2f1a0b'
     globalThis.crypto = {}
-    Crypto.randomUUID.mockReturnValue('uuid-from-expo')
+    Crypto.randomUUID.mockReturnValue(mockUuid)
 
     const id = generateUniqueId()
 
-    expect(id).toBe('uuid-from-expo')
+    expect(id).toBe(mockUuid)
+    expect(id).toMatch(UUID_V4_REGEX)
     expect(Crypto.randomUUID).toHaveBeenCalledTimes(1)
   })
 
@@ -45,6 +53,7 @@ describe('generateUniqueId (native)', () => {
     const id = generateUniqueId()
 
     expect(id).toBe('0a'.repeat(16))
+    expect(id).toMatch(HEX_32_REGEX)
     expect(Crypto.getRandomValues).toHaveBeenCalledTimes(1)
   })
 
