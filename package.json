@@ -1,5 +1,5 @@
 {
-  "name": "pear-apps-utils-generate-unique-id",
+  "name": "@tetherto/pear-apps-utils-generate-unique-id",
   "version": "0.0.6",
   "type": "module",
   "description": "Generate unique IDs for Pear Apps",
